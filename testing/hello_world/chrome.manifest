@@ -1,0 +1,6 @@
+content	hello_world			content/
+skin	hello_world	classic/1.0	skin/
+locale	hello_world	en-US		locale/en-US/
+
+overlay chrome://browser/content/browser.xul
+chrome://hello_world/content/browserOverlay.xul

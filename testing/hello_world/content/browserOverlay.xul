@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/css" href="chrome://global/skin/" ?>
+<?xml-stylesheet type="text/css" href="chrome://hello_world/skin/browserOverlay.css" ?>
+
+<!DOCTYPE overlay SYSTEM "chrome://hello_world/locale/browserOverlay.dtd">
+
+<overlay id="hello_world-browser-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"> <!-- The "id" part gives a name for this part of the XUL. The second part identifies the code as XUL (as opposed to HTML or SVG). -->
+
+	<script type="application/x-javascript" src="chrome://hello_world/content/browserOverlay.js" /> <!-- Includes a javascript file -->
+
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="hello_world-string-bundle" src="chrome://hello_world/locale/browserOverlay.properties" /> <!-- Loads extension-specific elements -->
+	</stringbundlset>
+
+	<menubar id="main-menubar"> <!-- This adds a menu item on older versions of Firefox -->
+		<menu id="hello_world-hello-menu" label="&hello_world.hello.label;" accesskey="&hello_world.helloMenu.accesskey;" insertafter="helpMenu"> <!-- The "insertafter" section tells Firefox to add the new menu after the help dropdown -->
+			<menupopup>
+				<menuitem id="hello_world-hello-menu-item" label="&hello_world.hello.label;" accesskey="&hello_world.helloItem.accesskey;" oncommand="hello_worldChrome.BrowserOverlay.sayHello(event);" /> <!-- Calls the actual function -->
+			</menupopup>
+		</menu>
+	</menubar>
+
+	<vbox id="appmenuSecondaryPane"> <!-- This code adds on the menu on newer versions -->
+		<menu id="hello_world-hello-menu-2" label="&hello_world.hello.label;" accesskey="&hello_world.helloMenu.accesskey;" insertafter="appmenu_addons">
+			<menupopup>
+				<menuitem id="hello_world-hello-menu-item-2" label="&hello_world.hello.label;" accesskey="&hello_world.helloItem.accesskey;" oncommand="hello_worldChrome.BrowserOverlay.sayHello(event);" />
+			</menupopup>
+		</menu>
+	</vbox>
+</overlay>
