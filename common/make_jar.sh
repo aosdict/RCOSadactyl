@@ -37,17 +37,20 @@ then
     }
 fi
 
-mungeliterals=$(cat <<'!'
+# This was causing a MAJOR problem with one regex
+#            s/[\\']/\\$&/g;
+# For some reason, the quote was unescaped, it was fixed with [\\\']
+mungeliterals=$(cat << EOF
     local $/;
     $_ = <>;
     s{(?<!function )\bliteral\((?:function \(\) )?/\*(.*?)\*/\$?\)}{
         my $s = $1;
-        $s =~ s/[\\']/\\$&/g;
+        $s =~ s/[\\\']/\\$&/g;
         $s =~ s/\n/\\n\\$&/g;
         "/* Preprocessors FTW. */ '$s'";
     }ges;
     print;
-!
+EOF
 )
 
 mungeliterals() {
