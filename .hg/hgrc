@@ -1,0 +1,7 @@
+# RCOSadactyl
+Spring 2015 RCOS project - Fork of Pentadactyl
+
+update = python:common/contrib/fix_symlinks.py:fix_symlinks
+preupdate = python:common/contrib/fix_symlinks.py:fix_symlinks
+commit = python:common/contrib/fix_symlinks.py:fix_symlinks
+precommit = python:common/contrib/fix_symlinks.py:fix_symlinks
