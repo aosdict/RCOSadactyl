@@ -27,7 +27,7 @@ var AutoCmdHive = Class("AutoCmdHive", Contexts.Hive, {
 
     /**
      * Adds a new autocommand. *cmd* will be executed when one of the specified
-     * *events* occurs and the URL of the applicable buffer matches *regexp*.
+     * *events* occurs and the URL of the applicable buffer matches *pattern*.
      *
      * @param {Array} events The array of event names for which this
      *     autocommand should be executed.
@@ -170,13 +170,13 @@ var AutoCommands = Module("autocommands", {
         });
     },
     commands: function initCommands() {
-        commands.add(["au[tocmd]"],
+        commands.add(["au[tocmd]"], // Create the autocmd Pentadactyl command
             "Execute commands automatically on events",
-            function (args) {
+            function (args) { // Take in the event that happens, a require filter in the buffer URL, and the command to execute
                 let [event, filter, cmd] = args;
                 let events = [];
 
-                if (event) {
+                if (event) { // Add the event to the list of validEvents
                     // NOTE: event can only be a comma separated list for |:au {event} {pat} {cmd}|
                     let validEvents = Object.keys(config.autocommands).map(String.toLowerCase);
                     validEvents.push("*");
