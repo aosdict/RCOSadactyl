@@ -4,20 +4,31 @@
   xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>helloworld@xulschool.com</em:id>
-    <em:name>XUL School Hello World</em:name>
-    <em:description>Welcome to XUL School!</em:description>
+    <em:id>pentadactyl@rcos.rpi.edu</em:id>
+    <em:name>Pentadactyl</em:name>
+    <em:description>Firefox, without a mouse</em:description>
     <em:version>0.1</em:version>
-    <em:creator>Appcoast</em:creator>
-    <em:homepageURL>https://developer.mozilla.org/en/XUL_School</em:homepageURL>
+    <em:homepageURL>https://github.com/aosdict/RCOSadactyl</em:homepageURL>
+    
+    <!-- declare this add-on as an extension -->
     <em:type>2</em:type>
+    <!-- is add-on bootstrappable? -->
+    <em:bootstrap>true</em:bootstrap>
+    <!-- always disable add-on when Firefox version is greater than the
+	 max version specified below -->
+    <em:strictCompatibility>true</em:strictCompatibility>
 
+    <em:creator>Kris Maglione, Doug Kearns</em:creator>
+    <em:developer>Cameron Root</em:developer>
+    <em:developer>Ruben Madera</em:developer>
+    
     <!-- Mozilla Firefox -->
     <em:targetApplication>
       <Description>
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>4.0</em:minVersion>
-        <em:maxVersion>10.*</em:maxVersion>
+	<!-- Unique identifier for Firefox, DO NOT CHANGE -->
+        <em:id>{A90C4BA1-5052-4593-999B-C3F94081C9DD}</em:id>
+        <em:minVersion>31.0</em:minVersion>
+        <em:maxVersion>36.*</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>
