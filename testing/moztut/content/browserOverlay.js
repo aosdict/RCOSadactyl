@@ -17,5 +17,6 @@ XULSchoolChrome.BrowserOverlay = {
     let message = stringBundle.getString("xulschoolhello.greeting.label");
 
     window.alert(message);
+    window.open("chrome://navigator/content/navigator.xul", "bmarks", "chrome,width=600,height=300");
   }
 };
