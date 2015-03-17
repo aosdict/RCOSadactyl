@@ -1,0 +1,6 @@
+content    pentadactyl        content/
+# can also have other directives here; skin, locale, etc
+# will we need to use overlay directives?
+# example:
+# overlay chrome://browser/content/browser.xul chrome://common/content/about.xul
+# source: https://developer.mozilla.org/en-US/Add-ons/Overlay_Extensions/XUL_School/The_Essentials_of_an_Extension
