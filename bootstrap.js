@@ -2,16 +2,43 @@ const Ci = Components.interfaces;
 
 Components.utils.import("resource://gre/modules/Services.jsm");
 
+/* Using a global variable is not the best solution, but there are virtually no
+   Javascript solutions to have the window accessible in the event handler
+   and simultaneously be able to remove the event listener later.
+*/
+var currWindow;
+
+function handleKey(ev) {
+    currWindow.alert("Event: "+ev.which);
+}
+
 function loadIntoWindow(window) {
-    Services.prompt.alert(null, "title", "Hey2!");
-    window.alert("Hey!");
-    /* call/move your UI construction function here */
+    // All UI setup happens in this function
+    
+    currWindow = window;
+    window.addEventListener("keydown", handleKey);
+    /*
+    try {
+	var doc = window.document;
+	var div = doc.createElement("div");
+	div.style.width = "100px";
+	div.style.height = "100px";
+	div.style.background = "red";
+	document.body.appendChild(div);
+    }catch(err) {
+	window.alert(err);
+    }
+    */
 }
 
 function unloadFromWindow(window) {
-    /* call/move your UI tear down function here */
+    // All UI tear down happens in this function
+    
+    currWindow = window;
+    window.removeEventListener("keydown", handleKey);
 }
 
+// Boilerplate code, do not change this function
 var WindowListener = {
     onOpenWindow: function(xulWindow) {
         var window = xulWindow.QueryInterface(Ci.nsIInterfaceRequestor)
@@ -29,21 +56,15 @@ var WindowListener = {
     onWindowTitleChange: function(xulWindow, newTitle) { }
 };
 
-function forEachOpenWindow(todo) {
-    // Apply a function to all open browser windows
+// Apply a function to all open browser windows
+function forEachOpenWindow(func) {
     var windows = Services.wm.getEnumerator("navigator:browser");
     while (windows.hasMoreElements())
-        todo(windows.getNext().QueryInterface(Ci.nsIDOMWindow));
+        func(windows.getNext().QueryInterface(Ci.nsIDOMWindow));
 }
 
 function startup(data,reason) {
-    // Load this add-ons module(s):
-    //Components.utils.import("chrome://myAddon/content/myModule.jsm");
-    // Do whatever initial startup stuff is needed for this add-on.
-    //   Code is in module just loaded.
-    //myModule.startup();  
-
-    // Make changes to the Firefox UI to hook in this add-on
+    // Load UI into all open windows
     forEachOpenWindow(loadIntoWindow);
     // Listen for any windows that open in the future
     Services.wm.addListener(WindowListener);
