@@ -1,4 +1,5 @@
 Loads a text box at the bottom of the window.
+Firefox starts up with it loaded.  If you lose focus with it, just click the banana in your toolbar.
 So far, only closes and restarts firefox.
 
 Directory structure:
