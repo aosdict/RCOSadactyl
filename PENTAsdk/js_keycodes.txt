@@ -1,0 +1,29 @@
+In all functions that handle a keyboard event, it will have a parameter "event". This is a KeyboardEvent object.
+
+Its member "event.which" holds the keycode, which is usually the ASCII representation of the character pressed without the shift key.
+
+So pressing Shift+5, which normally enters a %, will not give you keycode 37. Instead, the function will be triggered twice, once for Shift (16), and once for 5 (53). The keycode 37 may instead be triggered for some random non-ASCII key (Left Arrow in this case).
+
+For letters, you get the ASCII value of the capital letter. So pressing
+'p' will have code 80 'P' rather than 112 'p'.
+
+Special keycodes for non-ASCII keys (and some ASCII ones that are different):
+Shift = 16
+Caps Lock = 20
+Control = 17
+Option/Alt = 18
+Command = 224
+Escape = 27
+Enter = 13
+Backspace = 8
+Left, Up, Right, Down = 37, 38, 39, 40
+F1-F8 = 112-119
+Backtick/tilde = 192
+Minus/underscore = 173
+Left bracket/brace = 219
+Pipe/backslash = 220
+Right bracket/brace = 221
+Quote = 222
+Comma = 188
+Period = 190
+Slash/question mark = 191
