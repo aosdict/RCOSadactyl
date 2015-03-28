@@ -1,0 +1,32 @@
+Loads a text box at the bottom of the window.
+Firefox starts up with it loaded.  If you lose focus with it, just click the banana in your toolbar.
+So far, only closes and restarts firefox.
+
+Directory structure:
+
+PENTAsdk:
+    data:
+        banana64.png
+        banana32.png
+        get_text.js
+        text_entry.html
+    lib:
+        main.js
+        
+text_entry.html is just the white text box with the black border at the bottom of the screen
+get_text.js just parses user input from the box generated in text_entry.html
+main.js is where all the funtionality currently is (so far i only wrote code for ":q" to quit firefox and ":r" to restart)
+
+Use this to install the SDK:
+https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Installation
+
+And this to learn how to use it: 
+https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Getting_started
+
+I would write code, save it, and with a single "cfx run" command, my changes are live. 
+
+It's really similar to everything we've been doing so far except we import XUL modules much differently, like this:
+https://developer.mozilla.org/en-US/Add-ons/SDK/Tutorials/Chrome_Authority
+
+It's easier, everything is bootstrapped for us.  I think we should go down this route and take pentadactyl out of XULrunner already. 
+
