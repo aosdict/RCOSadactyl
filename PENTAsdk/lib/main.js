@@ -3,8 +3,8 @@ var data = require("sdk/self").data;
 // file in the "data" directory, and loading the "get-text.js" script
 // into it.
 var text_entry = require("sdk/panel").Panel({
-  contentURL: data.url("text-entry.html"),
-  contentScriptFile: data.url("get-text.js"),
+  contentURL: "./text-entry.html",
+  contentScriptFile: "./get-text.js",
   height: 16,
   width: 1500,
   padding: 0,
@@ -29,20 +29,24 @@ require("sdk/ui/button/action").ActionButton({
 });
 
 // Add an event listener to all opened pages
-require('sdk/page-mod').PageMod({
-    include: ["*", "about:newtab"],
-    contentScriptWhen: "end",
-    contentScript: 'window.alert("AAAAAAAAA");',
-    attachTo: ['top', 'existing']
-});
-
 /*
-require("sdk/tabs").on("ready", function(tab) {
-    tab.attach({
-	contentScript: 'window.alert("Goob gooob");'
-    });
+require('sdk/page-mod').PageMod({
+    include: ["about:newtab"],
+    contentScriptWhen: "start",
+    contentScript: 'window.alert("AAAAAAAAA");',
+    attachTo: ['existing', 'top', 'frame']
 });
 */
+
+require("sdk/tabs").on("open", function(tab) {
+    var worker = tab.attach({
+	contentScriptFile: "./handleKeypress.js"
+    });
+    worker.port.on("script-message", function(message) {
+	console.log(message);
+    });
+});
+/**/
 
 // Show the panel when the user clicks the button.
 function handleClick(state) {
@@ -85,4 +89,8 @@ text_entry.port.on("text-entered", function (text) {
 	console.log(text+" hasn't been implemented yet!");
     }
 
+});
+
+require("sdk/tabs").activeTab.attach({
+    contentScriptFile: "./handleKeypress.js"
 });
