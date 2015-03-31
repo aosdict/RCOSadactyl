@@ -3,14 +3,16 @@ var data = require("sdk/self").data;
 // file in the "data" directory, and loading the "get-text.js" script
 // into it.
 var text_entry = require("sdk/panel").Panel({
-    contentURL: data.url("text-entry.html"),
-    contentScriptFile: data.url("get-text.js"),
-    height: 18,
-    width: 750,
-    position: {
-	bottom: 5,
-	left: 5
-    }
+  contentURL: data.url("text-entry.html"),
+  contentScriptFile: data.url("get-text.js"),
+  height: 16,
+  width: 1500,
+  padding: 0,
+  margin: 0,
+  position: {
+    bottom: 1,
+    left: 0
+  }
 });
 
 // Create a button
