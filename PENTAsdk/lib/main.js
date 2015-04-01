@@ -1,4 +1,6 @@
 var data = require("sdk/self").data;
+var tabs = require("sdk/tabs");
+    
 // Construct a panel, loading its content from the "text-entry.html"
 // file in the "data" directory, and loading the "get-text.js" script
 // into it.
@@ -38,15 +40,27 @@ require('sdk/page-mod').PageMod({
 });
 */
 
-require("sdk/tabs").on("open", function(tab) {
+// Setup code to run in each tab
+function setupTab(tab) {
+    console.log("       setup");
     var worker = tab.attach({
 	contentScriptFile: "./handleKeypress.js"
     });
     worker.port.on("script-message", function(message) {
 	console.log(message);
     });
+    //worker.port.emit("alert", "aaaaa");
+}
+tabs.on("open", function(tab) { // Run setup code in all new tabs
+    //tab.on("ready", function(tab) {
+	setupTab(tab);
+    //});
 });
-/**/
+tabs.on("ready", function(tab) { //Run setup code in first new tab
+    setupTab(tabs.activeTab);
+});
+for(let tab of tabs) // Run setup code in all currently open tabs
+    setupTab(tab); 
 
 // Show the panel when the user clicks the button.
 function handleClick(state) {
@@ -89,8 +103,4 @@ text_entry.port.on("text-entered", function (text) {
 	console.log(text+" hasn't been implemented yet!");
     }
 
-});
-
-require("sdk/tabs").activeTab.attach({
-    contentScriptFile: "./handleKeypress.js"
 });
