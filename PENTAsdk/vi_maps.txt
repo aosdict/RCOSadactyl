@@ -1,0 +1,64 @@
+We need to decide which key mappings we want to take from VI and translate them into Firefox. 
+The Pentadactyl reference is at 5digits.org/help/pentadactyl
+One of many vi cheat sheets is at http://www.lagmonster.org/docs/vi2.html
+
+I propose that we follow Pentadactyl's command structure, but if there is a simpler or more intuitive way to do something we do it that way. For example, it would be good if we can cut back on the number of Ctrl+Something commands.
+
+Pentadactyl has several Modes of operation.
+Normal Mode - normal browsing with nothing special going on
+Command Mode - what you get when you enter a : character. From here, the text entry window is in focus and you can type in extended commands.
+Hints Mode - "navigation" mode. When first activated, all links are highlighted. Then you type in some characters and links whose contents do not match are filtered out. Once you uniquely match the link, you hit Enter to follow that link.
+
+PENTADACTYL COMMANDS
+================================================================================
+Command Line commands are represented with a :. Normal Mode commands are not.
+
+:help brings up the general help menu
+:help <command> brings up the help for that command
+h, j, k, l scroll the page
+0 or Shift+6 scrolls to the absolute left of the document
+Shift+4 scrolls to the absolute right of the document
+g+g goes to the top of the document
+Shift+g goes to the bottom of the document
+<count>Shift+5 scrolls to count% of the way down the page
+Space scrolls one page down (I think this is default behavior anyway)
+Ctrl+b scrolls one page up
+Ctrl+d scrolls one half page down
+Ctrl+u scrolls one half page up
+Ctrl+o goes back in the history by one page
+Ctrl+i goes forward in the history by one page
+g+t OR Ctrl+n goes to the next tab
+g+Shift+T OR Ctrl+p goes to the previous tab
+g+0 goes to the first tab
+g+Shift+4 goes to the last tab
+g+h opens the homepage in the current tab
+g+Shift+H opens the homepage in a new tab
+g+Shift+U goes to the root of the website (abc.com/d/e/f/g/h.html goes to abc.com)
+g+i focuses the last used input field
+d closes the current tab
+:tabopen <url> OR o <url> opens url in a new tab
+T goes into Command Mode preloaded with ":tabopen "
+:open <url> OR t <url> opens url in the current tab
+O goes into Command Mode preloaded with ":open "
+:winopen <url> or w <url> opens url in a new window
+W goes into Command Mode preloaded with ":winopen "
+:[<count>]tabduplicate duplicates current tab count times
+f activates Hints Mode (current tab)
+Shift+F activates Hints Mode (new tab)
+Escape switches from Command Mode to Normal Mode
+: switches from Normal Mode to Command Mode
+:xall OR Shift+Z+Shift+Z OR :wqall quits and saves the current session for next time
+:qall OR Shift+Z+Shift+Q OR :exit quits and does not save
+:q OR :quit closes only the current tab
+:quitall or :winclose closes the current window and all tabs
+:winonly closes all windows except the active one
+:dialog <dialog> opens the given Firefox builtin dialog (like about:addons)
+:bmarks opens the Pentadactyl-specific bookmarks editor
+:history opens a navigable list of the browser history
+:emenu allows navigation through Firefox menus
+r reloads the current page
+R reloads the current page without the cache
+Ctrl+c OR :stop stops loading the current page
+:stopall stops loading all pages
+g+f views page source
+g+Shift+f <editor> views page source in editor
