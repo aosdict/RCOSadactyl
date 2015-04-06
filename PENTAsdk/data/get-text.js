@@ -19,3 +19,7 @@ textArea.addEventListener('keyup', function onkeyup(event) {
 self.port.on("show", function onShow() {
   textArea.focus();
 });
+
+self.port.on("take-string", function(string) {
+    textArea.innerHTML = string;
+});

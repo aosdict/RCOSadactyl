@@ -46,7 +46,10 @@ function setupTab(tab) {
     var worker = tab.attach({
 	contentScriptFile: "./handleKeypress.js"
     });
-    worker.port.on("script-message", function(message) {
+    worker.port.on("change-mode-command", function(message) {
+	// enter command mode and show text entry
+	text_entry.port.emit("take-string", ":");
+	text_entry.show();
 	console.log(message);
     });
     //worker.port.emit("alert", "aaaaa");

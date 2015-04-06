@@ -7,7 +7,7 @@ const SCROLL_AMT = 10
 window.addEventListener("keydown", function(event) {
     switch(event.which) {
     case 59: //semicolon
-	self.port.emit("script-message", "Semicolon was pressed");
+	self.port.emit("change-mode-command", ":");
 	break;
     case 72: //h = scroll left
 	window.scrollBy(-SCROLL_AMT, 0);
