@@ -26,7 +26,7 @@ require("sdk/ui/button/action").ActionButton({
 	"32": "./banana32.png",
 	"64": "./banana.png"
     },
-    onClick: handleClick
+    onClick: showTextWindow
     // On event: ":"
 });
 
@@ -63,7 +63,7 @@ for(let tab of tabs) // Run setup code in all currently open tabs
     setupTab(tab); 
 
 // Show the panel when the user clicks the button.
-function handleClick(state) {
+function showTextWindow(state) {
     text_entry.show();
 }
 
