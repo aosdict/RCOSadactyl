@@ -78,6 +78,8 @@ text_entry.on("show", function() {
     text_entry.port.emit("show");
 });
 
+//text_entry.port.on("hide"
+
 //text_entry.show();
 
 // Listen for messages called "text-entered" coming from
