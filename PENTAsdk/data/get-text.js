@@ -6,12 +6,12 @@ var textArea = document.getElementById("edit-box");
 var vimWidnow = document.getElementById("vim-window");
 
 textArea.addEventListener('keyup', function onkeyup(event) {
-    if (event.keyCode == 27) {
-	// Escape pressed - clear the text and leave
-	textArea.value = "";
-	window.focus();
-	self.port.emit("hide");
-    }
+  if (event.keyCode == 27) {
+    // Escape pressed - clear the text and leave
+    textArea.value = "";
+    window.focus();
+    self.port.emit("hide");
+  }
   if (event.keyCode === 13) {
     // Remove the newline.
     text = textArea.value.replace(/(\r\n|\n|\r)/gm,"");
@@ -40,6 +40,6 @@ self.port.on("show", function onShow() {
 });
 
 self.port.on("take-string", function(string) {
-    textArea.value = string;
+  textArea.value = string;
 });
 
