@@ -3,11 +3,28 @@
 console.log("Running content script");
 
 const SCROLL_AMT = 10
+var metaPressed = {
+  shift: false,
+  alt: false,
+  ctrl: false
+};
+
+window.addEventListener("keyup", function(event) {
+  switch(event.which) {
+  case 16: //shift
+    metaPressed.shift = false;
+    break;
+  }
+});
 
 window.addEventListener("keydown", function(event) {
   switch(event.which) {
+  case 16: //shift
+    metaPressed.shift = true;
+    break;
   case 59: //semicolon
-    self.port.emit("change-mode-command", ":");
+    if(metaPressed.shift) //colon
+      self.port.emit("change-mode-command", ":");
     break;
   case 72: //h = scroll left
     window.scrollBy(-SCROLL_AMT, 0);
