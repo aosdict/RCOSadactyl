@@ -21,15 +21,16 @@ var text_entry = require("sdk/panel").Panel({
 });
 
 observer.on("keydown", function(event) {
+  console.log("Something happened");
   // Ignore events that have been handled elsewhere (e.g. by the web page)
   if(event.defaultPrevented) return;
 
-  //console.log(winUtils.getMostRecentBrowserWindow().document.activeElement.tagName);
+  var activeTag = winUtils.getMostRecentBrowserWindow().document.activeElement.tagName;
+  console.log(activeTag);
   
   // Ignore if the current focus is not in the actual browser window.
   // i.e. filter out key presses on the URI or search bar
-  if(winUtils.getMostRecentBrowserWindow().document.activeElement.tagName !=
-     "xul:browser") return;
+  if(activeTag != "xul:browser" && activeTag != "browser") return;
   
   //winUtils.getMostRecentBrowserWindow().document.activeElement = null;
   // Ignore if the user is typing in an input field
