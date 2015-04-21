@@ -7,13 +7,13 @@ var tabs = require("sdk/tabs");
 var text_entry = require("sdk/panel").Panel({
   contentURL: "./text-entry.html",
   contentScriptFile: "./get-text.js",
-  height: 16,
-  width: 1500,
   padding: 0,
   margin: 0,
+  height: 16,
   position: {
     bottom: 1,
-    left: 0
+    left: 0,
+    right: 0
   }
 });
 
@@ -80,47 +80,61 @@ text_entry.on("show", function() {
 
 //text_entry.show();
 
+// preserve tags specified by -x flag
+function UtilSaveTab(UrlArray , targetUrl){
+	for (var i = 0 ; i != UrlArray.length ; i++){
+		compString = UrlArray[i].substring(0, UrlArray[i].length-1);
+		if (compString != "" && targetUrl.indexOf(compString) > -1){
+			return true;
+		}
+	}
+	return false; 
+}
+
+function UtilIsInt(str){
+	var n = parseInt(str) 
+	if ( n >= 0 && n <=9999){
+		return true;
+	}
+	return false;
+}
+
 // Listen for messages called "text-entered" coming from
 // the content script. The message payload is the text the user
 // entered.
 
 text_entry.port.on("text-entered", function (text) {
+  // include Components.interface & Components.Classes.  Ci & Cc are just aliases for these.
+  // Ci is used to interact with the window (restart and quit) while Cc is used to call these functions
+  const {Ci, Cc} = require("chrome");
+  var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
+  var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
+  var gBrowser = mainWindow.gBrowser;
+
   // :r  ==  restart
   if (text === ":r"){
-    // include Components.interface & Components.Classes.  Ci & Cc are just aliases for these.
-    // Ci is used to interact with the window (restart and quit) while Cc is used to call these functions
-    const {Ci, Cc} = require("chrome");
-    var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
     boot.quit(Ci.nsIAppStartup.eForceQuit|Ci.nsIAppStartup.eRestart);
   }
   // :q  == quit
   else if (text === ":q"){
-    const {Ci, Cc} = require("chrome");
-    var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
     boot.quit(Ci.nsIAppStartup.eForceQuit);
   }
-
+  // :<int> = change tab
+  else if (UtilIsInt(text.substring(1,text.length))){
+  	gBrowser.selectedTab = gBrowser.tabContainer.childNodes[parseInt(text.substring(1,text.length))];
+  }
   // open a new tab, focus on it
   else if (text === ":nt" & text.length === 3){
-	const{Ci,Cc} = require("chrome");
-	var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
-	var gBrowser = mainWindow.gBrowser;
 	gBrowser.selectedTab = gBrowser.addTab("about:blank");
   }
 
   // open multiple tabs given a url
   else if (text.substring(0,3) === ":nt" & text.length > 3){
-  	const{Ci,Cc} = require("chrome");
   	// parse textArea for the input urls
   	var urlArray = text.substring(4,text.length).split(" ");
-	var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
-	var gBrowser = mainWindow.gBrowser;
-
 	// open each new tab iteratively:
-
 	// if the user only inputs a number, open a blank tab that many times
 	// to fixed checks of the first command line argument is a number.
-
 	if (parseInt(urlArray[0]) >= 1 || parseInt(urlArray[0]) <= 10000) {
 		if (urlArray.length === 1) {
 			for (var i = 0 ; i != parseInt(urlArray[0]) ; i++){
@@ -143,65 +157,118 @@ text_entry.port.on("text-entered", function (text) {
   }
 
   // delete tab
-  else if (text === ":dt"){
-  	const {Ci,Cc} = require("chrome");
-  	var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
-	var gBrowser = mainWindow.gBrowser;
+  else if (text === ":dt" && text.length === 3){
 	gBrowser.removeTab(gBrowser.selectedTab);
   }
 
   // delete multiple tabs
+  else if (text.substring(0,3) === ":dt") {
+	// :dt -x = "delete all tabs except current"
+	// :dt -x <str> = "delete all tabs except tabs whose url contains str"
+	// :dt left = "delete all tabs to the left of current tab"
+	// :dt right = "delete all tabs to the right of the current tab"
+	// :dt -x left <str> = "delete all left tabs except left tabs containing <str> in url"
+	// etc
 
-  else if (text.substring(0,3) === ":dt"){
-  	const {Ci,Cc} = require("chrome");
-  	var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
-	var gBrowser = mainWindow.gBrowser;
+	var deleteLeftTabs = false;
+	var deleteRightTabs = false;
+	var UrlsToKeep = new Array(0);
 
-	if (text.substring(4,6) === "-x"){
+	if (text.indexOf(" l") != -1){
+		deleteLeftTabs = true;
+	}
+
+	else if (text.indexOf(" r") != -1){
+		deleteRightTabs = true;
+	}
+	
+	if (text.substring(4,6) === "-x" 
+		&& !deleteRightTabs 
+		&& !deleteLeftTabs){
 		if (text.length <= 6){
 			gBrowser.removeAllTabsBut(gBrowser.selectedTab);
 		}
 		else {
-			tabsToKeep = text.substring(6, text.length).split(" ");
+			UrlsToKeep = text.substring(5, text.length).split(" ");
+			UrlsToKeep.shift();
+			// if input is not numbers, but urls to keep
+			if (UrlsToKeep[0].substring("*") != -1){
+				for (var i = gBrowser.tabContainer.childNodes.length - 1; i >= 0; i--){
+					CurrentUrl = gBrowser.tabContainer.childNodes[i].linkedBrowser.currentURI.spec;
+					if (!UtilSaveTab(UrlsToKeep, CurrentUrl)){
+						gBrowser.removeTab(gBrowser.tabContainer.childNodes[i]);
+					}
+	  			}
+  			}
 		}
 	}
 
-	// check if the user is inputing a url
-  	if (text.indexOf("*") === -1){
-  		
-  		// parse the textArea for the index of tabs to close, starting at 0.
+	else if (deleteRightTabs || deleteLeftTabs) {
+
+		// checking for " l" and " r" eliminates the need to check for " left" and " right" as well
+		// spaces are needed to make sure that we aren't detecting random r's and l's in any fed url.
+		//UrlsToKeep = [];
+
+		if (text.indexOf(" -x") != -1){
+			UrlsToKeep = text.substring((text.indexOf(" -x ") + 4), text.length).split(" ");
+		}
+
+		// there's a lot of low level bullshit you probably won't see anywhere else because 
+		// i dont know how to read documentation.
+
+		// we should only be calling UtilSaveTab if there are urls to keep or we'd get an indexing error
+		// note that it is possible to go through both if branches. this is intentional (y)
+		if (deleteLeftTabs){
+			for (var i = gBrowser.tabContainer.childNodes.length - 1; i >= 0; i--) {
+	  			if (gBrowser.tabContainer.selectedIndex > i) { 
+	  				CurrentUrl = gBrowser.tabContainer.childNodes[i].linkedBrowser.currentURI.spec;
+	  				console.log(CurrentUrl);
+	  				if (UrlsToKeep.length === 0 || !UtilSaveTab(UrlsToKeep,CurrentUrl)){
+	  					gBrowser.removeTab(gBrowser.tabContainer.childNodes[i]);
+	  				}
+	  			}
+			}
+		}
+
+		if (deleteRightTabs){
+			for (var i = gBrowser.tabContainer.childNodes.length - 1; i >= 0; i--) {
+		  		if (gBrowser.tabContainer.selectedIndex < i) {
+		  			CurrentUrl = gBrowser.tabContainer.childNodes[i].linkedBrowser.currentURI.spec;
+		    		if (UrlsToKeep.length === 0 || !UtilSaveTab(UrlsToKeep,CurrentUrl)){
+	  					gBrowser.removeTab(gBrowser.tabContainer.childNodes[i]);
+	  				}
+		  		}
+			}
+		}
+	}
+		// as of right now, only takes numbers
+		// need to check if the user is inputing a url
+	else {
+	  		// parse the textArea for the index of tabs to close, starting at 0.
   		var tabsToClose = text.substring(4, text.length).split(" ");
   		for (var i = 0 ; i != tabsToClose.length ; i++){
   			// cast it to an int
   			targetTab = parseInt(tabsToClose[i]);
-  			// close the corresponding tab
-  			gBrowser.removeTab(gBrowser.mTabContainer.childNodes[targetTab]);
-  		}
-  	}
-  	
+  			// I hope to god you do not have 10000 or more tabs open
+  			if (targetTab >= 0 && targetTab <= 9999)
+  				// close the corresponding tab
+  				gBrowser.removeTab(gBrowser.mTabContainer.childNodes[targetTab]);
+  			// else handle cases where the user input a url.
+  			else {
+  				for (var j = gBrowser.tabContainer.childNodes.length - 1; j >= 0; j--){
+					CurrentUrl = gBrowser.tabContainer.childNodes[j].linkedBrowser.currentURI.spec;
+					// using UtilSaveTab for the opposite of it's intended purpose in order to
+					// identify which tabs to eliminate rather than save.
+					if (UtilSaveTab(tabsToClose, CurrentUrl)){
+						gBrowser.removeTab(gBrowser.tabContainer.childNodes[j]);
+					}
+  				}
+  			}
+	  	}
+	}
   }
 
   else {
     console.log(text+" hasn't been implemented yet!");
   }
-    // :r  ==  restart
-    if (text === ":r"){
-	// include Components.interface & Components.Classes.  Ci & Cc are just aliases for these.
-	// Ci is used to interact with the window (restart and quit) while Cc is used to call these functions
-	const {Ci, Cc} = require("chrome");
-	var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
-	boot.quit(Ci.nsIAppStartup.eForceQuit|Ci.nsIAppStartup.eRestart);
-    }
-    // :q  == quit
-    else if (text === ":q"){
-	//
-	//
-	const {Ci, Cc} = require("chrome");
-	var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
-	boot.quit(Ci.nsIAppStartup.eForceQuit);
-    }
-    else {
-	console.log(text+" hasn't been implemented yet!");
-    }
-
 });
