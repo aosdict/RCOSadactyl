@@ -80,11 +80,6 @@ tabs.on("ready", function(tab) { //Run setup code in first new tab
 for(let tab of tabs) // Run setup code in all currently open tabs
   setupTab(tab); 
 */
-  
-// Show the panel when the user clicks the button.
-function showTextWindow(state) {
-  text_entry.show();
-}
 
 // When the panel is displayed it generated an event called
 // "show": we will listen for that event and when it happens,
