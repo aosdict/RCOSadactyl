@@ -13,11 +13,11 @@ var text_entry = require("sdk/panel").Panel({
   contentScriptFile: "./get-text.js",
   padding: 0,
   margin: 0,
-  height: 16,
+  height: 20,
   position: {
     bottom: 1,
     left: 0,
-    right: 0
+    right: 1
   }
 });
 
