@@ -2,7 +2,6 @@ var data = require("sdk/self").data;
 var tabs = require("sdk/tabs");
 var windows = require("sdk/windows");
 var { observer } = require("sdk/keyboard/observer"); //undocumented
-//var keys = require("./keyHandler.js");
 var winUtils = require("sdk/window/utils");
 
 // Construct a panel, loading its content from the "text-entry.html"
@@ -52,19 +51,6 @@ observer.on("keydown", function(event) {
  
   // Handle event normally
   //keys.handleKey(event);
-});
-
-// Create a button
-require("sdk/ui/button/action").ActionButton({
-  id: "show-panel",
-  label: "Show Panel",
-  icon: {
-    //"16": "./icon-16.png",
-    "32": "./banana32.png",
-    "64": "./banana.png"
-  },
-  onClick: showTextWindow
-  // On event: ":"
 });
 
 /*
