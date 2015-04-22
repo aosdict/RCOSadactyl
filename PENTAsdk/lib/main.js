@@ -2,7 +2,8 @@ var data = require("sdk/self").data;
 var tabs = require("sdk/tabs");
 var windows = require("sdk/windows");
 var { observer } = require("sdk/keyboard/observer"); //undocumented
-var winUtils = require("sdk/window/utils");
+var winUtils = require("sdk/window/utils"); //unstable
+var system = require("sdk/system"); //unstable
 
 // Construct a panel, loading its content from the "text-entry.html"
 // file in the "data" directory, and loading the "get-text.js" script
@@ -21,12 +22,12 @@ var text_entry = require("sdk/panel").Panel({
 });
 
 observer.on("keydown", function(event) {
-  console.log("Something happened");
   // Ignore events that have been handled elsewhere (e.g. by the web page)
   if(event.defaultPrevented) return;
 
-  var activeTag = winUtils.getMostRecentBrowserWindow().document.activeElement.tagName;
-  console.log(activeTag);
+  var activeTag =
+    winUtils.getMostRecentBrowserWindow().document.activeElement.tagName;
+  //console.log(activeTag);
   
   // Ignore if the current focus is not in the actual browser window.
   // i.e. filter out key presses on the URI or search bar
@@ -54,42 +55,12 @@ observer.on("keydown", function(event) {
   //keys.handleKey(event);
 });
 
-/*
-// Setup code to run in each tab
-function setupTab(tab) {
-  console.log("setup");
-  var worker = tab.attach({
-    contentScriptFile: "./handleKeypress.js"
-  });
-  worker.port.on("change-mode-command", function(message) {
-    // enter command mode and show text entry
-    text_entry.port.emit("take-string", ":");
-    text_entry.show();
-    console.log(message);
-  });
-  //worker.port.emit("alert", "aaaaa");
-}
-tabs.on("open", function(tab) { // Run setup code in all new tabs
-  //tab.on("ready", function(tab) {
-  setupTab(tab);
-  //});
-});
-tabs.on("ready", function(tab) { //Run setup code in first new tab
-  setupTab(tabs.activeTab);
-});
-for(let tab of tabs) // Run setup code in all currently open tabs
-  setupTab(tab); 
-*/
-
-// When the panel is displayed it generated an event called
-// "show": we will listen for that event and when it happens,
-// send our own "show" event to the panel's script, so the
-// script can prepare the panel for display.
+/* Various things may call text_entry.show()
+   When it gets shown, send the "show" message to the content script to prepare
+   the panel to be displayed. */
 text_entry.on("show", function() {
   text_entry.port.emit("show");
 });
-
-//text_entry.show();
 
 // preserve tags specified by -x flag
 function UtilSaveTab(UrlArray , targetUrl){
@@ -114,62 +85,36 @@ function UtilIsInt(str){
 // the content script. The message payload is the text the user
 // entered.
 text_entry.port.on("text-entered", function (text) {
-  // include Components.interface & Components.Classes.  Ci & Cc are just aliases for these.
+  /*
+  // include Components.interface & Components.Classes. Ci & Cc are just aliases for these.
   // Ci is used to interact with the window (restart and quit) while Cc is used to call these functions
   const {Ci, Cc} = require("chrome");
   var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
   var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
   var gBrowser = mainWindow.gBrowser;
+  */
+  
+  // :q
+  // quit
+  if (text === ":q"){
+    system.exit();
+  }
+ 
+  // :nt [<url>]
+  // open a new tab and optionally load <url>
+  else if (text.substring(0,3) === ":nt") {
+    tabs.open(text.substring(4, text.length));
+  }
 
-  // :r  ==  restart
-  if (text === ":r"){
-    boot.quit(Ci.nsIAppStartup.eForceQuit|Ci.nsIAppStartup.eRestart);
+  // :dt
+  // delete current tab
+  else if (text === ":dt") {
+    tabs.activeTab.close();
   }
-  // :q  == quit
-  else if (text === ":q"){
-    boot.quit(Ci.nsIAppStartup.eForceQuit);
-  }
+  /*
   // :<int> = change tab
   else if (UtilIsInt(text.substring(1,text.length))){
   	gBrowser.selectedTab = gBrowser.tabContainer.childNodes[parseInt(text.substring(1,text.length))];
-  }
-  // open a new tab, focus on it
-  else if (text === ":nt" & text.length === 3){
-	gBrowser.selectedTab = gBrowser.addTab("about:blank");
-  }
-
-  // open multiple tabs given a url
-  else if (text.substring(0,3) === ":nt" & text.length > 3){
-  	// parse textArea for the input urls
-  	var urlArray = text.substring(4,text.length).split(" ");
-	// open each new tab iteratively:
-    // if the user only inputs a number, open a blank tab that many times
-    // to fixed checks of the first command line argument is a number.
-
-    if (parseInt(urlArray[0]) >= 1 || parseInt(urlArray[0]) <= 10000) {
-      if (urlArray.length === 1) {
-		for (var i = 0 ; i != parseInt(urlArray[0]) ; i++){
-	 	 gBrowser.selectedTab = gBrowser.addTab("about:blank");
-		}
-      }
-      else{
-		for (var i = 0 ; i != parseInt(urlArray[0]) ; i++){
-	 	 gBrowser.selectedTab = gBrowser.addTab(urlArray[1]);
-		}
-      }
-    }
-
-    else {
-      for (var i = 0; i != urlArray.length; i++){
-		console.log(urlArray[i]+'\n');
-		gBrowser.selectedTab = gBrowser.addTab(urlArray[i]);
-      }
-    }
-  }
-
-  // delete tab
-  else if (text === ":dt" && text.length === 3){
-	gBrowser.removeTab(gBrowser.selectedTab);
   }
   // delete multiple tabs
   else if (text.substring(0,3) === ":dt") {
@@ -277,6 +222,7 @@ text_entry.port.on("text-entered", function (text) {
 	  	}
 	}
   }
+  */
 
   else {
     console.log(text+" hasn't been implemented yet!");
