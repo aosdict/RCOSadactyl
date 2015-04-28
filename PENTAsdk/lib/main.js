@@ -4,6 +4,7 @@ var windows = require("sdk/windows");
 var { observer } = require("sdk/keyboard/observer"); //undocumented
 var winUtils = require("sdk/window/utils"); //unstable
 var system = require("sdk/system"); //unstable
+var { Bookmark, save } = require("sdk/places/bookmarks");
 
 // for a couple of lower level functionality
 const {Ci, Cc} = require("chrome");
@@ -127,6 +128,22 @@ text_entry.port.on("text-entered", function (text) {
   // previous tab
   else if (text === ":pT"){
   	ChangeTab (gBrowser.tabContainer.selectedIndex - 1);
+  }
+
+  else if (text === ":bookmark"){
+  	CurrentUrl = gBrowser.tabContainer.childNodes[gBrowser.tabContainer.selectedIndex].linkedBrowser.currentURI.spec
+  	var Title = text.substring(9, text.length);
+  	var bookmark = Bookmark({ title: Title, url: CurrentUrl });
+
+  	let emitter = save(bookmark);
+	// Listen for events
+	emitter.on("data", function (saved, inputItem) {
+		}).on("end", function (savedItems, inputItems) {
+	});
+  }
+
+  else if (text.substring(0,11) === ":bookmark G" || text.substring(0,11) === ":bookmark g"){
+  	
   }
 
   /*
