@@ -59,14 +59,10 @@ observer.on("keydown", function(event) {
     }
     break;
   case 72: // H
-    activeWindow.scrollBy(-10, 0);
-    activeWindow.scrollY += 10;
     break;
   case 74: // J
-    activeWindow.scrollBy(10, 0);
     break;
   case 75: // K
-    activeWindow.scrollBy(-10, 0);
     break;
   case 76: // L
     break;
@@ -136,13 +132,19 @@ text_entry.port.on("text-entered", function (text) {
   // :nT 
   // next tab
   else if (text === ":nT"){
-  	ChangeTab (gBrowser.tabContainer.selectedIndex + 1);
+    curr = tabs.activeTab.index;
+    if (curr < tabs.length-1) {
+      tabs[tabs.activeTab.index + 1].activate();
+    }
   }
   
   // :pT
   // previous tab
   else if (text === ":pT"){
-  	ChangeTab (gBrowser.tabContainer.selectedIndex - 1);
+    curr = tabs.activeTab.index;
+    if (curr > 0) {
+      tabs[tabs.activeTab.index - 1].activate();
+    }
   }
 
   else if (text === ":bookmark"){
