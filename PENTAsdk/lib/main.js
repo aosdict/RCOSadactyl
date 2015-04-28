@@ -66,6 +66,27 @@ observer.on("keydown", function(event) {
     break;
   case 76: // L
     break;
+  case 79: // O
+    if (event.shiftKey) { //capital O
+      text_entry.port.emit("take-string", ":open");
+      text_entry.show();
+    }
+  case 82: // R
+    if (event.shiftKey) {
+
+    } else { // lowercase r
+      tabs.activeTab.reload();
+    }
+  case 84: // T
+    if (event.shiftKey) { //capital T
+      text_entry.port.emit("take-string", ":tabopen");
+      text_entry.show();
+    }
+  case 87: // W
+    if (event.shiftKey) { //capital W
+      text_entry.port.emit("take-string", ":winopen");
+      text_entry.show();
+    }
   default:
     console.log("Undefined key event: "+event.which);
   }
