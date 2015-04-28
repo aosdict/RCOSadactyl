@@ -55,6 +55,9 @@ observer.on("keydown", function(event) {
       text_entry.show();
     }
     break;
+  case 192: //tab
+  	text_entry.port.emit("take-string", ":test");
+    break;
   default:
     console.log("Undefined key event: "+event.which);
   }
@@ -102,34 +105,35 @@ text_entry.port.on("text-entered", function (text) {
   // Ci is used to interact with the window (restart and quit) while Cc is used to call these functions
   // :q
   // quit
-  if (text === ":q"){
+  if (text === ":quit"){
     system.exit();
   }
  
   // :nt [<url>]
   // open a new tab and optionally load <url>
-  else if (text.substring(0,3) === ":nt") {
-    tabs.open(text.substring(4, text.length));
+  else if (text.substring(0,7) === ":newtab") {
+    tabs.open(text.substring(8, text.length));
   }
 
   // :dt
   // delete current tab
-  else if (text === ":dt") {
+  else if (text === ":deltab") {
     tabs.activeTab.close();
   }
 
   // :nT 
   // next tab
-  else if (text === ":nT"){
+  else if (text === ":nexttab"){
   	ChangeTab (gBrowser.tabContainer.selectedIndex + 1);
   }
   
   // :pT
   // previous tab
-  else if (text === ":pT"){
+  else if (text === ":prevtab"){
   	ChangeTab (gBrowser.tabContainer.selectedIndex - 1);
   }
-
+  // :bookmark <title>
+  // :bookmark current page
   else if (text === ":bookmark"){
   	CurrentUrl = gBrowser.tabContainer.childNodes[gBrowser.tabContainer.selectedIndex].linkedBrowser.currentURI.spec
   	var Title = text.substring(9, text.length);
@@ -142,6 +146,8 @@ text_entry.port.on("text-entered", function (text) {
 	});
   }
 
+  // :bookmark group
+  // bookmarks entire group where current focus is
   else if (text.substring(0,11) === ":bookmark G" || text.substring(0,11) === ":bookmark g"){
   	
   }
