@@ -25,8 +25,8 @@ observer.on("keydown", function(event) {
   // Ignore events that have been handled elsewhere (e.g. by the web page)
   if(event.defaultPrevented) return;
 
-  var activeTag =
-    winUtils.getMostRecentBrowserWindow().document.activeElement.tagName;
+  var activeWindow = winUtils.getMostRecentBrowserWindow();
+  var activeTag = activeWindow.document.activeElement.tagName;
   //console.log(activeTag);
   
   // Ignore if the current focus is not in the actual browser window.
@@ -39,13 +39,28 @@ observer.on("keydown", function(event) {
   if(focus != null && focus.tagName != "HTML") {
     return;
   }
-
+  
+  var activeWindow = winUtils.getMostRecentBrowserWindow();
+  console.log(activeWindow.scrollY);
+  
   switch(event.which) {
-  case 59: //semicolon
-    if(event.shiftKey) { //colon
+  case 59: // semicolon
+    if(event.shiftKey) { // colon
       text_entry.port.emit("take-string", ":");
       text_entry.show();
     }
+    break;
+  case 72: // H
+    activeWindow.scrollBy(-10, 0);
+    activeWindow.scrollY += 10;
+    break;
+  case 74: // J
+    activeWindow.scrollBy(10, 0);
+    break;
+  case 75: // K
+    activeWindow.scrollBy(-10, 0);
+    break;
+  case 76: // L
     break;
   default:
     console.log("Undefined key event: "+event.which);
