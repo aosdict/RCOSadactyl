@@ -43,8 +43,8 @@ textArea.addEventListener('keyup', function onkeyup(event) {
   	var textBoxValue = textArea.value;
   	var replaceWithMe = utilAutoComplete(textBoxValue);
   	var replaceText = textArea.value.replace(/(\r\n|\n|\r)/gm,replaceWithMe);
-    self.port.emit("take-string", replaceText);
-    console.log(replaceWithMe);
+  	self.port.emit("take-string", replaceText);
+  	console.log(replaceWithMe);
   	textArea.value = replaceWithMe;
   }
 }, false);
