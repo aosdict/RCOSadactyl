@@ -33,8 +33,8 @@ observer.on("keydown", function(event) {
   // Ignore events that have been handled elsewhere (e.g. by the web page)
   if(event.defaultPrevented) return;
 
-  var activeTag =
-    winUtils.getMostRecentBrowserWindow().document.activeElement.tagName;
+  var activeWindow = winUtils.getMostRecentBrowserWindow();
+  var activeTag = activeWindow.document.activeElement.tagName;
   //console.log(activeTag);
   
   // Ignore if the current focus is not in the actual browser window.
@@ -47,17 +47,46 @@ observer.on("keydown", function(event) {
   if(focus != null && focus.tagName != "HTML") {
     return;
   }
-
+  
+  var activeWindow = winUtils.getMostRecentBrowserWindow();
+  console.log(activeWindow.scrollY);
+  
   switch(event.which) {
-  case 59: //semicolon
-    if(event.shiftKey) { //colon
+  case 59: // semicolon
+    if(event.shiftKey) { // colon
       text_entry.port.emit("take-string", ":");
       text_entry.show();
     }
     break;
-  case 192: //tab
-  	text_entry.port.emit("take-string", ":test");
+  case 72: // H
     break;
+  case 74: // J
+    break;
+  case 75: // K
+    break;
+  case 76: // L
+    break;
+  case 79: // O
+    if (event.shiftKey) { //capital O
+      text_entry.port.emit("take-string", ":open");
+      text_entry.show();
+    }
+  case 82: // R
+    if (event.shiftKey) {
+
+    } else { // lowercase r
+      tabs.activeTab.reload();
+    }
+  case 84: // T
+    if (event.shiftKey) { //capital T
+      text_entry.port.emit("take-string", ":tabopen");
+      text_entry.show();
+    }
+  case 87: // W
+    if (event.shiftKey) { //capital W
+      text_entry.port.emit("take-string", ":winopen");
+      text_entry.show();
+    }
   default:
     console.log("Undefined key event: "+event.which);
   }
@@ -124,13 +153,19 @@ text_entry.port.on("text-entered", function (text) {
   // :nT 
   // next tab
   else if (text === ":nexttab"){
-  	ChangeTab (gBrowser.tabContainer.selectedIndex + 1);
+    curr = tabs.activeTab.index;
+    if (curr < tabs.length-1) {
+      tabs[tabs.activeTab.index + 1].activate();
+    }
   }
   
   // :pT
   // previous tab
   else if (text === ":prevtab"){
-  	ChangeTab (gBrowser.tabContainer.selectedIndex - 1);
+    curr = tabs.activeTab.index;
+    if (curr > 0) {
+      tabs[tabs.activeTab.index - 1].activate();
+    }
   }
   // :bookmark <title>
   // :bookmark current page
