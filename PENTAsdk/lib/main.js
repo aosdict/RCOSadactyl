@@ -5,6 +5,13 @@ var { observer } = require("sdk/keyboard/observer"); //undocumented
 var winUtils = require("sdk/window/utils"); //unstable
 var system = require("sdk/system"); //unstable
 
+// for a couple of lower level functionality
+const {Ci, Cc} = require("chrome");
+var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
+var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
+var gBrowser = mainWindow.gBrowser;
+
+
 // Construct a panel, loading its content from the "text-entry.html"
 // file in the "data" directory, and loading the "get-text.js" script
 // into it.
@@ -81,19 +88,17 @@ function UtilIsInt(str){
 	return false;
 }
 
+function ChangeTab(TabIndex){
+	gBrowser.selectedTab = gBrowser.tabContainer.childNodes[TabIndex];
+}
+
 // Listen for messages called "text-entered" coming from
 // the content script. The message payload is the text the user
 // entered.
 text_entry.port.on("text-entered", function (text) {
-  /*
+  
   // include Components.interface & Components.Classes. Ci & Cc are just aliases for these.
   // Ci is used to interact with the window (restart and quit) while Cc is used to call these functions
-  const {Ci, Cc} = require("chrome");
-  var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup);
-  var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
-  var gBrowser = mainWindow.gBrowser;
-  */
-  
   // :q
   // quit
   if (text === ":q"){
@@ -111,11 +116,25 @@ text_entry.port.on("text-entered", function (text) {
   else if (text === ":dt") {
     tabs.activeTab.close();
   }
+
+  // :nT 
+  // next tab
+  else if (text === ":nT"){
+  	ChangeTab (gBrowser.tabContainer.selectedIndex + 1);
+  }
+  
+  // :pT
+  // previous tab
+  else if (text === ":pT"){
+  	ChangeTab (gBrowser.tabContainer.selectedIndex - 1);
+  }
+
   /*
   // :<int> = change tab
   else if (UtilIsInt(text.substring(1,text.length))){
   	gBrowser.selectedTab = gBrowser.tabContainer.childNodes[parseInt(text.substring(1,text.length))];
   }
+
   // delete multiple tabs
   else if (text.substring(0,3) === ":dt") {
 	// :dt -x = "delete all tabs except current"
@@ -199,7 +218,7 @@ text_entry.port.on("text-entered", function (text) {
 		// as of right now, only takes numbers
 		// need to check if the user is inputing a url
 	else {
-	  		// parse the textArea for the index of tabs to close, starting at 0.
+	  	// parse the textArea for the index of tabs to close, starting at 0.
   		var tabsToClose = text.substring(4, text.length).split(" ");
   		for (var i = 0 ; i != tabsToClose.length ; i++){
   			// cast it to an int
