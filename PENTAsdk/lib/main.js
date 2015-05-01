@@ -5,6 +5,7 @@ var { observer } = require("sdk/keyboard/observer"); //undocumented
 var winUtils = require("sdk/window/utils"); //unstable
 var system = require("sdk/system"); //unstable
 var { Bookmark, save } = require("sdk/places/bookmarks");
+var pagemod = require("sdk/page-mod");
 
 // for a couple of lower level functionality
 const {Ci, Cc} = require("chrome");
@@ -12,6 +13,13 @@ var boot = Cc["@mozilla.org/toolkit/app-startup;1"].getService(Ci.nsIAppStartup)
 var mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"].getService(Ci.nsIWindowMediator).getMostRecentWindow("navigator:browser");
 var gBrowser = mainWindow.gBrowser;
 
+// we try scrolling on all pages
+pageMod.PageMod({
+  include: "*",
+  attachTo: ['existing', 'top'],
+  contentScriptFile: './scroll.js',
+  contentScriptWhen: 'ready'
+});
 
 // Construct a panel, loading its content from the "text-entry.html"
 // file in the "data" directory, and loading the "get-text.js" script
