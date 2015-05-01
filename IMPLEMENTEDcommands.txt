@@ -1,0 +1,24 @@
+Normal Mode Commands
+================================================================================
+: - Enters command mode.
+h - Scroll a bit to the left.
+j - Scroll a bit down.
+k - Scroll a bit up.
+l - Scroll a bit to the right.
+H - Scroll all the way to the left.
+J - Scroll to the bottom.
+K - Scroll to the top.
+L - Scroll all the way to the right.
+O - Summons command mode with :open preloaded.
+T - Summons command mode with :tabopen preloaded.
+W - Summons command mode with :winopen preloaded.
+r - Reloads the page.
+================================================================================
+Command Mode Commands
+================================================================================
+:quit - Quits Firefox
+:newtab - Opens a new tab, can provide a URL
+:deltab - Close current tab
+:nexttab - Go to the next tab
+:prevtab - Go to the previous tab
+:bookmark - Bookmark current page
