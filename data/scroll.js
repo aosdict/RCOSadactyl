@@ -3,7 +3,12 @@
 });
 */
 
-const SCROLLAMT = 10;
+var SCROLLAMT = 10;
+
+self.port.on("set scrollamt", function(_SCROLLAMT){
+  console.log("test2");
+  SCROLLAMT = _SCROLLAMT;
+});
 
 window.addEventListener('keydown', function(event) {
   if (document.activeElement.tagName != 'INPUT') {
